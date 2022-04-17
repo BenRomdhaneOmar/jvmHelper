@@ -16,6 +16,7 @@ sealed interface Maybe<TYPE : Any> {
     infix fun orElse(alternative: TYPE): TYPE
     fun orElse(alternativeSupplier: Supplier<TYPE>): TYPE
     fun toOptional(): Optional<TYPE>
+    override fun toString(): String
 
     @JvmSynthetic
     suspend fun <MAPPED : Any> mapSuspend(mapper: suspend (TYPE) -> MAPPED): Maybe<MAPPED>
@@ -29,7 +30,7 @@ sealed interface Maybe<TYPE : Any> {
     companion object Builder {
 
         @JvmStatic
-        infix fun <TYPE : Any> of(element: TYPE): Maybe<TYPE> = NotEmpty.of(element)
+        infix fun <TYPE : Any> of(element: TYPE): Maybe<TYPE> = NotEmpty of element
 
         @JvmStatic
         infix fun <TYPE : Any> fromOptional(element: Optional<TYPE>): Maybe<TYPE> = element.toMaybe()
@@ -59,7 +60,7 @@ sealed interface Maybe<TYPE : Any> {
     private class NotEmpty<TYPE : Any> private constructor(private val element: TYPE) : Maybe<TYPE> {
 
         companion object Builder {
-            fun <TYPE : Any> of(element: TYPE) = NotEmpty(element)
+            infix fun <TYPE : Any> of(element: TYPE) = NotEmpty(element)
         }
 
         override fun isPresent() = true
@@ -83,6 +84,8 @@ sealed interface Maybe<TYPE : Any> {
         override suspend fun <OTHER : Any> flatMapSuspend(mapper: suspend (TYPE) -> Maybe<OTHER>) = mapper(element)
 
         override suspend fun orElseSuspend(alternativeSupplier: suspend () -> TYPE) = element
+
+        override fun toString() = """Maybe.NotEmpty(element=$element)"""
 
     }
 
@@ -113,6 +116,8 @@ sealed interface Maybe<TYPE : Any> {
         override suspend fun <OTHER : Any> flatMapSuspend(mapper: suspend (TYPE) -> Maybe<OTHER>) = of<OTHER>()
 
         override suspend fun orElseSuspend(alternativeSupplier: suspend () -> TYPE) = alternativeSupplier()
+
+        override fun toString() = "Maybe.Empty"
 
     }
 }
