@@ -9,13 +9,13 @@
     <version>0.0.1</version>
     <name>${project.artifactId}</name>
     <description>helper for jvm languages</description>
-    <url></url>
+    <url>https://omar-ben-romdhane.jetbrains.space/p/jvmhelper/repositories/jvmHelper</url>
 
     <licenses>
         <license>
             <name>MIT</name>
             <url>/jvmHelper/LICENSE.md</url>
-            <distribution>/jvmHelper</distribution>
+            <distribution>https://omar-ben-romdhane.jetbrains.space/p/jvmhelper/repositories/jvmHelper</distribution>
         </license>
     </licenses>
 
@@ -36,20 +36,15 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <build.helper.version>3.3.0</build.helper.version>
+        <maven.compiler.version>3.5.1</maven.compiler.version>
         <!--java-->
         <java.version>17</java.version>
         <!--kotlin-->
         <kotlin.version>1.6.20</kotlin.version>
-        <kotlinx.version>1.6.0</kotlinx.version>
+        <kotlinx.version>1.6.1-native-mt</kotlinx.version>
         <kotlin.code.style>official</kotlin.code.style>
-        <!--groovy-->
-        <groovy.version>3.0.10</groovy.version>
-        <gmavenplus.version>1.11.0</gmavenplus.version>
-        <!--scala-->
-        <scala.version>3.2.0-RC1-bin-20220416-53f5531-NIGHTLY</scala.version>
-        <scala.maven.pluguin.version>3.3.2</scala.maven.pluguin.version>
         <!--test-->
+        <surefire.version>2.22.1</surefire.version>
         <junit.version>5.8.2</junit.version>
         <archunit.version>0.23.1</archunit.version>
     </properties>
@@ -74,30 +69,13 @@
             <version>${kotlinx.version}</version>
         </dependency>
 
-        <!--groovy-->
-
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-            <version>${groovy.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!--scala-->
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala3-library_3</artifactId>
-            <version>${scala.version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <!--test-->
 
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-test</artifactId>
             <version>${kotlinx.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -135,43 +113,6 @@
 
         <plugins>
 
-            <!--maven-->
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>${build.helper.version}</version>
-                <executions>
-                    <execution>
-                        <id>mh-generate-sources</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/main/kotlin</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>mh-generate-test-sources</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/java</source>
-                                <source>src/test/kotlin</source>
-                                <source>src/test/groovy</source>
-                                <source>src/test/scala</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!--kotlin-->
 
             <plugin>
@@ -181,73 +122,77 @@
                 <executions>
                     <execution>
                         <id>compile</id>
-                        <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <args>
-                        <arg>-Xjsr305=strict</arg>
-                        <arg>-opt-in=kotlin.RequiresOptIn</arg>
-                    </args>
-                </configuration>
-            </plugin>
-
-            <!--groovy-->
-
-            <plugin>
-                <groupId>org.codehaus.gmavenplus</groupId>
-                <artifactId>gmavenplus-plugin</artifactId>
-                <version>${gmavenplus.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>addSources</goal>
-                            <goal>addTestSources</goal>
-                            <goal>generateStubs</goal>
-                            <goal>compile</goal>
-                            <goal>generateTestStubs</goal>
-                            <goal>compileTests</goal>
-                            <goal>removeStubs</goal>
-                            <goal>removeTestStubs</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!--scala-->
-
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>${scala.maven.pluguin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
                         </goals>
                         <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                            </sourceDirs>
                             <args>
-                                <arg>-dependencyfile</arg>
-                                <arg>${project.build.directory}/.scala_dependencies</arg>
+                                <arg>-opt-in=kotlin.RequiresOptIn</arg>
+                            </args>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+                                <sourceDir>${project.basedir}/src/test/java</sourceDir>
+                            </sourceDirs>
+                            <args>
+                                <arg>-opt-in=kotlin.RequiresOptIn</arg>
                             </args>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
+            <!--maven-->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>java-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>java-test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+            </plugin>
+
         </plugins>
 
     </build>
-
-    <repositories>
-        <repository>
-            <id>mavenCentral</id>
-            <url>https://repo1.maven.org/maven2/</url>
-        </repository>
-    </repositories>
 
 </project>

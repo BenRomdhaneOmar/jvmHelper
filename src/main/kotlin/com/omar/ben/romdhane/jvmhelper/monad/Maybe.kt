@@ -10,8 +10,10 @@ sealed interface Maybe<TYPE : Any> {
     fun isEmpty(): Boolean
     fun <MAPPED : Any> map(mapper: Function<TYPE, MAPPED>): Maybe<MAPPED>
     fun <OTHER : Any> flatMap(mapper: Function<TYPE, Maybe<OTHER>>): Maybe<OTHER>
+
+    @JvmSynthetic
     fun orNull(): TYPE?
-    fun orElse(alternative: TYPE): TYPE
+    infix fun orElse(alternative: TYPE): TYPE
     fun orElse(alternativeSupplier: Supplier<TYPE>): TYPE
     fun toOptional(): Optional<TYPE>
 
@@ -27,7 +29,10 @@ sealed interface Maybe<TYPE : Any> {
     companion object Builder {
 
         @JvmStatic
-        fun <TYPE : Any> of(element: TYPE): Maybe<TYPE> = NotEmpty.of(element)
+        infix fun <TYPE : Any> of(element: TYPE): Maybe<TYPE> = NotEmpty.of(element)
+
+        @JvmStatic
+        infix fun <TYPE : Any> fromOptional(element: Optional<TYPE>): Maybe<TYPE> = element.toMaybe()
 
         @JvmStatic
         fun <TYPE : Any> empty(): Maybe<TYPE> = Empty.of()
@@ -67,7 +72,7 @@ sealed interface Maybe<TYPE : Any> {
 
         override fun orNull() = element
 
-        override fun orElse(alternative: TYPE) = element
+        override infix fun orElse(alternative: TYPE) = element
 
         override fun orElse(alternativeSupplier: Supplier<TYPE>) = element
 
@@ -97,7 +102,7 @@ sealed interface Maybe<TYPE : Any> {
 
         override fun orNull(): TYPE? = null
 
-        override fun orElse(alternative: TYPE) = alternative
+        override infix fun orElse(alternative: TYPE) = alternative
 
         override fun orElse(alternativeSupplier: Supplier<TYPE>) = alternativeSupplier.get()
 

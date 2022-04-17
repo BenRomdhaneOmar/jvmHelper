@@ -9,7 +9,7 @@ import kotlin.random.Random
 import kotlin.test.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class MaybeTest {
+internal class MaybeKotlinTest {
 
     @Test
     fun `maybe should return true when is present called when it is created as non empty`() {
@@ -73,7 +73,7 @@ internal class MaybeTest {
         val initialValue = UUID.randomUUID().toString()
         val result =
             Maybe.of(initialValue)
-                .flatMap { Maybe.of(it.length) }
+                .flatMap { Maybe of it.length }
                 .orNull()!!
 
         assertNotEquals<Any>(initialValue, result)
@@ -84,7 +84,7 @@ internal class MaybeTest {
         val initialMaybe = Maybe.empty<String>()
         val result =
             initialMaybe
-                .flatMap { Maybe.of(it.length) }
+                .flatMap { Maybe of it.length }
 
         assertNotEquals<Maybe<*>>(initialMaybe, result)
     }
@@ -94,7 +94,7 @@ internal class MaybeTest {
         val initialValue = UUID.randomUUID().toString()
         val result =
             Maybe.of(initialValue)
-                .flatMap { Maybe.of(it.length) }
+                .flatMap { Maybe of it.length }
                 .orNull()!!
 
         assertEquals(initialValue.length, result)
@@ -105,7 +105,7 @@ internal class MaybeTest {
         val initialMaybe = Maybe.empty<String>()
         val result =
             initialMaybe
-                .flatMap { Maybe.of(it.length) }
+                .flatMap { Maybe of it.length }
                 .isEmpty()
 
         assertTrue(result)
@@ -134,8 +134,7 @@ internal class MaybeTest {
     fun `maybe must return the alternative value when or else is called if it was created as empty`() {
         val alternativeValue = Random.nextInt()
         val result =
-            Maybe.empty<Int>()
-                .orElse(alternativeValue)
+            Maybe.empty<Int>() orElse alternativeValue
 
         assertEquals(alternativeValue, result)
     }
@@ -144,8 +143,7 @@ internal class MaybeTest {
     fun `maybe must return the initial value when or else is called if it was created as non empty`() {
         val initialValue = Random.nextInt()
         val result =
-            Maybe.of(initialValue)
-                .orElse(Random.nextInt())
+            Maybe of initialValue orElse Random.nextInt()
 
         assertEquals(initialValue, result)
     }
@@ -217,7 +215,7 @@ internal class MaybeTest {
         val initialValue = UUID.randomUUID().toString()
         val result =
             Maybe.of(initialValue)
-                .flatMapSuspend { Maybe.of(it.length) }
+                .flatMapSuspend { Maybe of it.length }
                 .orNull()!!
 
         assertNotEquals<Any>(initialValue, result)
@@ -228,7 +226,7 @@ internal class MaybeTest {
         val initialMaybe = Maybe.empty<String>()
         val result =
             initialMaybe
-                .flatMapSuspend { Maybe.of(it.length) }
+                .flatMapSuspend { Maybe of it.length }
 
         assertNotEquals<Maybe<*>>(initialMaybe, result)
     }
@@ -239,7 +237,7 @@ internal class MaybeTest {
             val initialValue = UUID.randomUUID().toString()
             val result =
                 Maybe.of(initialValue)
-                    .flatMapSuspend { Maybe.of(it.length) }
+                    .flatMapSuspend { Maybe of it.length }
                     .orNull()!!
 
             assertEquals(initialValue.length, result)
@@ -251,7 +249,7 @@ internal class MaybeTest {
             val initialMaybe = Maybe.empty<String>()
             val result =
                 initialMaybe
-                    .flatMapSuspend { Maybe.of(it.length) }
+                    .flatMapSuspend { Maybe of it.length }
                     .isEmpty()
 
             assertTrue(result)
@@ -343,7 +341,7 @@ internal class MaybeTest {
     fun `maybe of maybe must return a maybe and not maybe of maybe when we apply flatten if it was created as non empty`() {
         val initialValue = UUID.randomUUID().toString()
         val result =
-            Maybe.of(Maybe.of(initialValue))
+            Maybe.of(Maybe of initialValue)
                 .flatten()
                 .orNull()!!
 
@@ -368,6 +366,34 @@ internal class MaybeTest {
                 .isEmpty()
 
         assertTrue(result)
+    }
+
+    @Test
+    fun `maybe must be created empty if it was created by empty optional`() {
+        val result =
+            Maybe.fromOptional(Optional.empty())
+                .isEmpty()
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `maybe must be created empty if it was created by optional contains null`() {
+        val result =
+            Maybe.fromOptional(Optional.ofNullable(null))
+                .isEmpty()
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `maybe must be created with initial value if it was created by optional non empty and contain non null element`() {
+        val initialValue = Random.nextInt()
+        val result =
+            Maybe.fromOptional(Optional.of(initialValue))
+                .orNull()!!
+
+        assertEquals(initialValue, result)
     }
 
 }
