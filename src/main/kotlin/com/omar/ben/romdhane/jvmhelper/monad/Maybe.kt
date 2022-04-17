@@ -24,19 +24,31 @@ sealed interface Maybe<TYPE : Any> {
     @JvmSynthetic
     suspend fun orElseSuspend(alternativeSupplier: suspend () -> TYPE): TYPE
 
-    fun Optional<TYPE>.toMaybe(): Maybe<TYPE> =
-        map { of(it) }
-            .orElse(empty())
-
-    fun TYPE.toMaybe(): Maybe<TYPE> =
-        of(this)
-
-    fun Maybe<Maybe<TYPE>>.flatten(): Maybe<TYPE> =
-        orElse(empty())
-
     companion object Builder {
+
+        @JvmStatic
         fun <TYPE : Any> of(element: TYPE): Maybe<TYPE> = NotEmpty.of(element)
+
+        @JvmStatic
         fun <TYPE : Any> empty(): Maybe<TYPE> = Empty.of()
+
+        fun <TYPE : Any> Optional<TYPE>.toMaybe(): Maybe<TYPE> =
+            map { of(it) }
+                .orElse(empty())
+
+        fun <TYPE : Any> TYPE.toMaybe(): Maybe<TYPE> =
+            of(this)
+
+        @JvmName("toMaybeOnNullable")
+        fun <TYPE : Any, NULLABLE_TYPE : TYPE?> NULLABLE_TYPE.toMaybe(): Maybe<TYPE> =
+            if (this != null)
+                of(this)
+            else
+                empty()
+
+        fun <TYPE : Any> Maybe<Maybe<TYPE>>.flatten(): Maybe<TYPE> =
+            orElse(empty())
+
     }
 
     private class NotEmpty<TYPE : Any> private constructor(private val element: TYPE) : Maybe<TYPE> {

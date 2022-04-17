@@ -41,6 +41,7 @@
         <java.version>17</java.version>
         <!--kotlin-->
         <kotlin.version>1.6.20</kotlin.version>
+        <kotlinx.version>1.6.0</kotlinx.version>
         <kotlin.code.style>official</kotlin.code.style>
         <!--groovy-->
         <groovy.version>3.0.10</groovy.version>
@@ -67,6 +68,11 @@
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
+            <version>${kotlinx.version}</version>
+        </dependency>
 
         <!--groovy-->
 
@@ -88,6 +94,11 @@
 
         <!--test-->
 
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-test</artifactId>
+            <version>${kotlinx.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit5</artifactId>
@@ -179,6 +190,7 @@
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>
+                        <arg>-opt-in=kotlin.RequiresOptIn</arg>
                     </args>
                 </configuration>
             </plugin>
