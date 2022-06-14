@@ -66,6 +66,12 @@ sealed interface Either<LEFT : Any, RIGHT : Any> {
         @JvmStatic
         infix fun <LEFT : Any, RIGHT : Any> left(element: LEFT): Either<LEFT, RIGHT> = Left of element
 
+        fun <TYPE : Any> Either<TYPE, TYPE>.fold(): TYPE =
+            this.fold(
+                { it },
+                { it }
+            )
+
         fun <RIGHT : Any> Exception.toEither(): Either<Exception, RIGHT> = left(this)
 
         fun <LEFT : Any, TYPE : Any> TYPE.toRightEither(): Either<LEFT, TYPE> = right(this)
